@@ -39,7 +39,7 @@ class ViewController: NSViewController {
     tableView.setDelegate(self)
     tableView.setDataSource(self)
     tableView.target = self
-    tableView.doubleAction = "tableViewDoubleClick:"
+    tableView.doubleAction = #selector(ViewController.tableViewDoubleClick(_:))
     //1.
     let descriptorName = NSSortDescriptor(key: Directory.FileOrder.Name.rawValue, ascending: true)
     let descriptorDate = NSSortDescriptor(key: Directory.FileOrder.Date.rawValue, ascending: true)
