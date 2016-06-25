@@ -23,19 +23,25 @@
 import Cocoa
 
 class ViewController: NSViewController {
-  
+
+    // create outlets
   @IBOutlet weak var statusLabel:NSTextField!
+    // table view outlet
   @IBOutlet weak var tableView: NSTableView!
-  
+
+    // globals
   let sizeFormatter = NSByteCountFormatter()
   var directory:Directory?
   var directoryItems:[Metadata]?
   var sortOrder = Directory.FileOrder.Name
   var sortAscending = true
-  
+
+    // on startup
   override func viewDidLoad() {
     super.viewDidLoad()
     statusLabel.stringValue = ""
+    
+    // setuo tableview
     tableView.setDelegate(self)
     tableView.setDataSource(self)
     tableView.target = self
@@ -45,6 +51,8 @@ class ViewController: NSViewController {
     let descriptorDate = NSSortDescriptor(key: Directory.FileOrder.Date.rawValue, ascending: true)
     let descriptorSize = NSSortDescriptor(key: Directory.FileOrder.Size.rawValue, ascending: true)
     //2.
+    
+    // setup row sorting
     tableView.tableColumns[0].sortDescriptorPrototype = descriptorName;
     tableView.tableColumns[1].sortDescriptorPrototype = descriptorDate;
     tableView.tableColumns[2].sortDescriptorPrototype = descriptorSize;
@@ -59,6 +67,8 @@ class ViewController: NSViewController {
       }
     }
   }
+    
+    // open file on click
   func tableViewDoubleClick( sender:AnyObject ) {
     
     //1.
@@ -76,6 +86,7 @@ class ViewController: NSViewController {
     }
   }
   
+    // update status bar
   func updateStatus() {
     
     let text:String
@@ -97,17 +108,23 @@ class ViewController: NSViewController {
     statusLabel.stringValue = text
   }
   
+    // reload tableview
   func reloadFileList() {
     directoryItems = directory?.contentsOrderedBy(sortOrder, ascending: sortAscending)
+    // reload tableview with directoryItems object
     tableView.reloadData()
   }
 }
 
+// NSTableViewDataSource: tells the table view how many rows it needs to represent.
 extension ViewController : NSTableViewDataSource {
+    
+    // returns the number of rows the tableview will display, tableviewdelegate will require this
   func numberOfRowsInTableView(tableView: NSTableView) -> Int {
     return directoryItems?.count ?? 0
   }
-  
+
+    // handle sorting
   func tableView(tableView: NSTableView, sortDescriptorsDidChange oldDescriptors: [NSSortDescriptor]) {
     //1
     guard let sortDescriptor = tableView.sortDescriptors.first else {
@@ -123,24 +140,31 @@ extension ViewController : NSTableViewDataSource {
   
 }
 
+// NSTableViewDelegate: provides the view cell that will be displayed for a specific row and column.
 extension ViewController : NSTableViewDelegate {
   
+    // if selection did change, update status bar
   func tableViewSelectionDidChange(notification: NSNotification) {
     updateStatus()
   }
-  
+
+    // called for every row and column.
+    // the delegate creates the view for that position, populates it with the appropriate data, and then returns it to the table view.
   func tableView(tableView: NSTableView, viewForTableColumn tableColumn: NSTableColumn?, row: Int) -> NSView? {
-    
+
     var image:NSImage?
     var text:String=""
     var cellIdentifier:String=""
     
     // 1
+    // load directory item
+    // now this function will come with a variable 'row' that we then use with directoryItems?[row] to return the data for that row, which we will then append to the tableview
     guard let item = directoryItems?[row] else {
       return nil
     }
     
     // 2
+    // place directory item in tableview row
     if tableColumn == tableView.tableColumns[0] {
       image = item.icon
       text = item.name
@@ -156,6 +180,7 @@ extension ViewController : NSTableViewDelegate {
     }
     
     // 3
+    // add file/directory image to cell
     if let cell = tableView.makeViewWithIdentifier(cellIdentifier, owner: nil ) as? NSTableCellView {
       cell.textField?.stringValue = text
       cell.imageView?.image = image ?? nil
