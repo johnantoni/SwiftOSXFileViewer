@@ -46,12 +46,16 @@ class ViewController: NSViewController {
     tableView.setDataSource(self)
     tableView.target = self
     tableView.doubleAction = #selector(ViewController.tableViewDoubleClick(_:))
+    
     //1.
     let descriptorName = NSSortDescriptor(key: Directory.FileOrder.Name.rawValue, ascending: true)
+    print(descriptorName)
     let descriptorDate = NSSortDescriptor(key: Directory.FileOrder.Date.rawValue, ascending: true)
+    print(descriptorDate)
     let descriptorSize = NSSortDescriptor(key: Directory.FileOrder.Size.rawValue, ascending: true)
+    print(descriptorSize)
+
     //2.
-    
     // setup row sorting
     tableView.tableColumns[0].sortDescriptorPrototype = descriptorName;
     tableView.tableColumns[1].sortDescriptorPrototype = descriptorDate;
